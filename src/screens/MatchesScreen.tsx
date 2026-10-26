@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  TextInput,
   RefreshControl,
   StyleSheet,
   Text,
@@ -75,6 +76,7 @@ export function MatchesScreen() {
   const [filter, setFilter] = useState<Filter>('all');
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const { isFavorite, toggle } = useFavorites();
+  const [search, setSearch] = useState('');
 
   const loadMatches = useCallback(async (isRefresh = false) => {
     if (isRefresh) {
@@ -111,17 +113,24 @@ export function MatchesScreen() {
     void loadMatches();
   }, [loadMatches]);
 
+
   const filteredMatches = useMemo(() => {
-    if (filter === 'upcoming') {
-      return matches.filter((match) => match.status === 'scheduled');
-    }
+    const query = search.trim().toLocaleLowerCase('ru-RU');
 
-    if (filter === 'finished') {
-      return matches.filter((match) => match.status === 'finished');
-    }
+    return matches.filter((match) => {
+      const matchesFilter =
+          filter === 'all' ||
+          (filter === 'upcoming' && match.status === 'scheduled') ||
+          (filter === 'finished' && match.status === 'finished');
 
-    return matches;
-  }, [matches, filter]);
+      const matchesSearch =
+          !query ||
+          match.home.name.toLocaleLowerCase('ru-RU').includes(query) ||
+          match.away.name.toLocaleLowerCase('ru-RU').includes(query);
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [matches, filter, search]);
 
   const filters: { label: string; value: Filter }[] = [
     { label: 'Все', value: 'all' },
@@ -185,6 +194,18 @@ export function MatchesScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Матчи тура</Text>
 
+        <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Найти клуб..."
+            placeholderTextColor="#899384"
+            autoCapitalize="none"
+            autoCorrect={false}
+            clearButtonMode="while-editing"
+            style={styles.searchInput}
+            accessibilityLabel="Поиск по названию клуба"
+        />
+
         <View style={styles.filters}>
           {filters.map((item) => (
               <Pressable
@@ -242,6 +263,17 @@ export function MatchesScreen() {
 
 
 const styles = StyleSheet.create({
+  searchInput: {
+    backgroundColor: '#1a2119',
+    borderWidth: 1,
+    borderColor: '#303a2e',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: '#f3f5ed',
+    fontSize: 14,
+    marginBottom: 14,
+  },
   container: {
     flex: 1,
     padding: 20,
