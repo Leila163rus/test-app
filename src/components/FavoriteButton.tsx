@@ -1,3 +1,4 @@
+
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 type Props = {
@@ -5,26 +6,30 @@ type Props = {
   onPress: () => void;
 };
 
-// Звёздочка «в избранное».
+// Кнопка добавления матча в избранное.
 export function FavoriteButton({ active, onPress }: Props) {
   return (
-    <Pressable
-      onPress={onPress}
-      hitSlop={12}
-      accessibilityRole="button"
-      accessibilityLabel={active ? 'Убрать из избранного' : 'Добавить в избранное'}
-    >
-      <Text style={[styles.star, active && styles.active]}>{active ? '★' : '☆'}</Text>
-    </Pressable>
+      <Pressable
+          onPress={onPress}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel={
+            active ? 'Убрать из избранного' : 'Добавить в избранное'
+          }
+      >
+        <Text style={[styles.star, active && styles.active]}>
+          {active ? '★' : '☆'}
+        </Text>
+      </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   star: {
-    fontSize: 22,
-    color: '#9ca3af',
+    fontSize: 27,
+    color: '#899384',
   },
   active: {
-    color: '#ef3124',
+    color: '#d7ff62',
   },
 });
